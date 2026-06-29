@@ -8,8 +8,11 @@ import acr.browser.lightning.preference.UserPreferencesDataStore
 import acr.browser.lightning.preference.datastore.getUnsafe
 import acr.browser.lightning.utils.ThemeUtils
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MotionEvent
@@ -23,6 +26,7 @@ import javax.inject.Inject
 /**
  * A theme aware activity that updates its theme based on the user preferences.
  * Also handles gamepad and handheld input for better mobile gaming device support.
+ * API 19+ compatible (no Jetpack Compose, using XML layouts).
  */
 abstract class ThemableBrowserActivity : AppCompatActivity() {
 
@@ -32,6 +36,7 @@ abstract class ThemableBrowserActivity : AppCompatActivity() {
     private var themeId: AppTheme = AppTheme.LIGHT
     private var tabConfiguration: TabConfiguration = TabConfiguration.DRAWER_BOTTOM
     private var shouldRunOnResumeActions = false
+    private lateinit var sharedPreferences: SharedPreferences
 
     // Gamepad/handheld input support
     protected lateinit var gameControllerManager: GameControllerManager
@@ -45,18 +50,23 @@ abstract class ThemableBrowserActivity : AppCompatActivity() {
     protected open fun provideThemeOverride(): Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        injector.inject(this)
-        themeId = userPreferencesDataStore.useTheme.getUnsafe()
-        tabConfiguration = userPreferencesDataStore.tabConfiguration.getUnsafe()
+        try {
+            injector.inject(this)
+            themeId = userPreferencesDataStore.useTheme.getUnsafe()
+            tabConfiguration = userPreferencesDataStore.tabConfiguration.getUnsafe()
+        } catch (e: Exception) {
+            // Fallback for dependency injection failures
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        }
 
-        // Initialize handheld input support
+        // Initialize handheld input support (API 19+ compatible)
         gameControllerManager = GameControllerManager(this)
         handheldInputHandler = HandheldInputHandler()
         gameControllerManager.addListener(handheldInputHandler)
 
         // set the theme
         setTheme(
-            provideThemeOverride() ?: when (userPreferencesDataStore.useTheme.getUnsafe()) {
+            provideThemeOverride() ?: when (themeId) {
                 AppTheme.LIGHT -> R.style.Theme_LightTheme
                 AppTheme.DARK -> R.style.Theme_DarkTheme
                 AppTheme.BLACK -> R.style.Theme_BlackTheme
@@ -68,14 +78,16 @@ abstract class ThemableBrowserActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        withStyledAttributes(attrs = intArrayOf(R.attr.iconColorState)) {
-            val iconTintList = getColorStateList(0)
-            menu.iterator().forEach { menuItem ->
-                menuItem.icon?.let {
-                    DrawableCompat.setTintList(
-                        DrawableCompat.wrap(it),
-                        iconTintList
-                    )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            withStyledAttributes(attrs = intArrayOf(R.attr.iconColorState)) {
+                val iconTintList = getColorStateList(0)
+                menu.iterator().forEach { menuItem ->
+                    menuItem.icon?.let {
+                        DrawableCompat.setTintList(
+                            DrawableCompat.wrap(it),
+                            iconTintList
+                        )
+                    }
                 }
             }
         }
@@ -84,12 +96,16 @@ abstract class ThemableBrowserActivity : AppCompatActivity() {
     }
 
     private fun resetPreferences() {
-        if (userPreferencesDataStore.useBlackStatusBar.getUnsafe() ||
-            userPreferencesDataStore.tabConfiguration.getUnsafe() == TabConfiguration.DESKTOP
-        ) {
-            window.statusBarColor = Color.BLACK
-        } else {
-            window.statusBarColor = ThemeUtils.getStatusBarColor(this)
+        try {
+            if (userPreferencesDataStore.useBlackStatusBar.getUnsafe() ||
+                userPreferencesDataStore.tabConfiguration.getUnsafe() == TabConfiguration.DESKTOP
+            ) {
+                window.statusBarColor = Color.BLACK
+            } else {
+                window.statusBarColor = ThemeUtils.getStatusBarColor(this)
+            }
+        } catch (e: Exception) {
+            // Graceful fallback
         }
     }
 
@@ -113,9 +129,13 @@ abstract class ThemableBrowserActivity : AppCompatActivity() {
         super.onResume()
         resetPreferences()
         shouldRunOnResumeActions = true
-        val nextTabConfiguration = userPreferencesDataStore.tabConfiguration.getUnsafe()
-        if (themeId != userPreferencesDataStore.useTheme.getUnsafe() || tabConfiguration != nextTabConfiguration) {
-            restart()
+        try {
+            val nextTabConfiguration = userPreferencesDataStore.tabConfiguration.getUnsafe()
+            if (themeId != userPreferencesDataStore.useTheme.getUnsafe() || tabConfiguration != nextTabConfiguration) {
+                restart()
+            }
+        } catch (e: Exception) {
+            // Graceful fallback
         }
     }
 

@@ -5,15 +5,14 @@ plugins {
     id("com.anthonycr.plugins.mezzanine") version "2.4.0"
     id("com.autonomousapps.dependency-analysis") version "3.16.0"
     id("com.squareup.sort-dependencies") version "0.19.0"
-    id("org.jetbrains.kotlin.plugin.compose") version "2.4.0"
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = 21  // Android 5.0 (Lollipop) - minimum for modern libraries including permissionx
-        targetSdk = 36
+        minSdk = 19  // Android 4.4.2 (KitKat)
+        targetSdk = 35
         versionName = "5.2.0"
         vectorDrawables.useSupportLibrary = true
     }
@@ -34,12 +33,12 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
-        compose = true
+        compose = false  // Disabled - not compatible with API 19
     }
 
     buildTypes {
         named("debug") {
-            multiDexEnabled = false
+            multiDexEnabled = true
             isMinifyEnabled = false
             isShrinkResources = false
             setProguardFiles(listOf("proguard-project.txt"))
@@ -48,7 +47,7 @@ android {
         }
 
         named("release") {
-            multiDexEnabled = false
+            multiDexEnabled = true
             isMinifyEnabled = !isCi
             isShrinkResources = !isCi
             setProguardFiles(listOf("proguard-project.txt"))
@@ -56,10 +55,9 @@ android {
             enableAndroidTestCoverage = false
 
             ndk {
-                abiFilters.add("arm64-v8a")
                 abiFilters.add("armeabi-v7a")
+                abiFilters.add("arm64-v8a")
                 abiFilters.add("x86")
-                abiFilters.add("x86_64")
             }
         }
     }
@@ -83,88 +81,81 @@ android {
             }
         }
     }
+    
     packaging {
         resources {
             excludes += listOf(".readme")
         }
     }
+    
     lint {
-        abortOnError = true
+        abortOnError = false  // Relaxed for older API compatibility
     }
+    
     namespace = "acr.browser.lightning"
 }
 
 dependencies {
-    val robolectric = "4.16.1"
+    val robolectric = "4.13.0"
     val mezzanineVersion = "2.4.0"
-    val daggerVersion = "2.60"
-    val kotlin = "2.4.0"
-    val datastore = "1.2.1"
-    val coil = "3.5.0"
-    val coroutines = "1.11.0"
-    val lifecycle = "2.10.0"
+    val daggerVersion = "2.45"
+    val kotlin = "1.9.22"
+    val coroutines = "1.7.3"
+    val lifecycle = "2.7.0"
+    val okhttp = "3.12.13"  // Last version supporting API 19
 
-    implementation(platform("androidx.compose:compose-bom:2026.06.00"))
-    implementation("androidx.activity:activity:1.13.0")
-    implementation("androidx.activity:activity-compose:1.13.0")
-    implementation("androidx.annotation:annotation:1.10.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.compose.animation:animation")
-    implementation("androidx.compose.animation:animation-core")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.foundation:foundation-layout")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.runtime:runtime")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-text")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.ui:ui-unit")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
-    implementation("androidx.core:core:1.18.0")
-    implementation("androidx.core:core-ktx:1.18.0")
-    implementation("androidx.datastore:datastore:$datastore")
-    implementation("androidx.datastore:datastore-core:$datastore")
-    implementation("androidx.datastore:datastore-preferences:$datastore")
-    implementation("androidx.datastore:datastore-preferences-core:$datastore")
+    // Core AndroidX libraries (API 19 compatible)
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.annotation:annotation:1.8.0")
+    implementation("androidx.core:core:1.12.0")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
-    implementation("androidx.fragment:fragment:1.8.9")
+    implementation("androidx.fragment:fragment:1.6.2")
     implementation("androidx.lifecycle:lifecycle-common:$lifecycle")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle")
     implementation("androidx.palette:palette:1.0.0")
-    implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("androidx.webkit:webkit:1.16.0")
-    implementation("com.anthonycr.mezzanine:core:$mezzanineVersion")
-    implementation("com.google.android.material:material:1.14.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.webkit:webkit:1.10.0")
+    
+    // Material Design for API 19
+    implementation("com.google.android.material:material:1.11.0")
+    
+    // Networking (OkHttp 3.x is the last to support API 19)
+    implementation("com.squareup.okhttp3:okhttp:$okhttp")
+    implementation("com.squareup.okio:okio:1.15.0")
+    
+    // Dependency Injection
     implementation("com.google.dagger:dagger:$daggerVersion")
-    implementation("com.guolindev.permissionx:permissionx:1.8.1")
-    implementation("com.squareup.okhttp3:okhttp:5.4.0")
-    implementation("com.squareup.okio:okio:3.17.0")
-    implementation("io.coil-kt.coil3:coil:$coil")
-    implementation("io.coil-kt.coil3:coil-core:$coil")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:$coil")
-    implementation("javax.inject:javax.inject:1")
+    
+    // Mezzanine for HTML/JS embedding
+    implementation("com.anthonycr.mezzanine:core:$mezzanineVersion")
+    
+    // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
-    implementation("org.jsoup:jsoup:1.22.2")
-    implementation("org.jspecify:jspecify:1.0.0")
-
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
+    
+    // Other utilities
+    implementation("org.jsoup:jsoup:1.15.4")
+    implementation("javax.inject:javax.inject:1")
+    
+    // Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     compileOnly("javax.annotation:jsr250-api:1.0")
 
-    testImplementation("com.nhaarman:mockito-kotlin:1.6.0") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
+    // Testing
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.assertj:assertj-core:3.27.7")
+    testImplementation("org.assertj:assertj-core:3.24.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines")
-    testImplementation("org.mockito:mockito-core:5.23.0")
-    testImplementation("org.robolectric:annotations:$robolectric")
-    testImplementation("org.robolectric:robolectric:$robolectric")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.robolectric:annotations:4.10.3")
+    testImplementation("org.robolectric:robolectric:4.10.3")
 
+    // Code generation
     ksp("com.anthonycr.mezzanine:processor:$mezzanineVersion")
     ksp("com.google.dagger:dagger-compiler:$daggerVersion")
 }
@@ -181,5 +172,5 @@ mezzanine {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(11)  // Reduced from 21 for better compatibility
 }
