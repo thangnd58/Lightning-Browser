@@ -44,12 +44,12 @@ suspend fun UserPreferencesDataStore.selectedHostsSource(): HostsSourceType {
 
     val source = hostsSource.get()
 
-    return when (source) {
-        HostsSourcePreference.LOCAL if localFile != null -> {
+    return when {
+        source == HostsSourcePreference.LOCAL && localFile != null -> {
             HostsSourceType.Local(localFile)
         }
 
-        HostsSourcePreference.REMOTE if remoteUrl != null -> {
+        source == HostsSourcePreference.REMOTE && remoteUrl != null -> {
             HostsSourceType.Remote(remoteUrl)
         }
 

@@ -115,8 +115,8 @@ dependencies {
     implementation("com.squareup.okio:okio:1.15.0")
     
     // Dependency Injection
-    implementation("com.google.dagger:dagger:2.45")
-    ksp("com.google.dagger:dagger-compiler:2.45")
+    implementation("com.google.dagger:dagger:2.51.1")
+    ksp("com.google.dagger:dagger-compiler:2.51.1")
     
     // Mezzanine
     //implementation("com.anthonycr.mezzanine:core:2.4.0")
