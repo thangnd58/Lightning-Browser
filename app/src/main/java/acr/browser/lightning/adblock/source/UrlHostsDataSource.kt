@@ -52,7 +52,7 @@ class UrlHostsDataSource @AssistedInject constructor(
                 override fun onResponse(call: Call, response: Response) {
                     val successfulResponse = response.takeIf(Response::isSuccessful)
                         ?: return emitter.resume(HostsResult.Failure(IOException("Error reading remote file")))
-                    val input = InputStreamReader(successfulResponse.body.byteStream())
+                    val input = InputStreamReader(successfulResponse.body().byteStream())
 
                     val hostsFileParser = HostsFileParser(logger)
 

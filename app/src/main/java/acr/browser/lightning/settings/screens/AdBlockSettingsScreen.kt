@@ -16,7 +16,7 @@ import acr.browser.lightning.settings.framework.ClickableOnClick
 import acr.browser.lightning.settings.framework.ClickableState
 import acr.browser.lightning.settings.framework.SettingsFrameworkState
 import acr.browser.lightning.settings.framework.ToggleState
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.HttpUrl
 import javax.inject.Inject
 
 class AdBlockSettingsScreen @Inject constructor(
@@ -96,7 +96,7 @@ class AdBlockSettingsScreen @Inject constructor(
                                         )
                                     },
                                     onValueUpdated = { value ->
-                                        val url = value.toHttpUrlOrNull()
+                                        val url = HttpUrl.parse(value)
                                         if (url == null) {
                                             ClickableOnClick.Snackbar {
                                                 userPreferencesDataStore.hostsSource.set(

@@ -8,6 +8,7 @@ import acr.browser.lightning.dialog.BrowserDialog.setDialogSize
 import acr.browser.lightning.download.DownloadHandler
 import acr.browser.lightning.log.Logger
 import acr.browser.lightning.preference.UserPreferencesDataStore
+import acr.browser.lightning.utils.PermissionUtils
 import android.Manifest
 import android.app.Dialog
 import android.content.DialogInterface
@@ -16,7 +17,6 @@ import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
-import com.permissionx.guolindev.PermissionX
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,13 +42,13 @@ class DownloadPermissionsHelper @Inject constructor(
         mimeType: String?,
         contentLength: Long
     ) {
-        PermissionX.init(activity)
-            .permissions(
-                listOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            ).request { allGranted, _, _ ->
+        PermissionUtils.request(
+            activity,
+            listOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        ) { allGranted ->
                 if (allGranted) {
                     val fileName = MimeTypeMap.getFileExtensionFromUrl(url)
                         .takeIf(String::isNotBlank)

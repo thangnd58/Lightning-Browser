@@ -3,7 +3,6 @@ package acr.browser.lightning.adblock.source
 import acr.browser.lightning.preference.IntEnum
 import acr.browser.lightning.preference.UserPreferencesDataStore
 import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.File
 
 
@@ -40,7 +39,7 @@ suspend fun UserPreferencesDataStore.selectedHostsSource(): HostsSourceType {
     val localFile: File? =
         hostsLocalFile.get()?.let(::File)?.takeIf(File::exists)?.takeIf(File::canRead)
 
-    val remoteUrl: HttpUrl? = hostsRemoteFile.get()?.toHttpUrlOrNull()
+    val remoteUrl: HttpUrl? = hostsRemoteFile.get()?.let { HttpUrl.parse(it) }
 
     val source = hostsSource.get()
 

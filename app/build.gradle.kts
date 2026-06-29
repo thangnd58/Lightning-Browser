@@ -116,6 +116,9 @@ dependencies {
     // Networking
     implementation("com.squareup.okhttp3:okhttp:$okhttp")
     implementation("com.squareup.okio:okio:1.15.0")
+
+    // Preferences storage
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     
     // Dependency Injection
     implementation("com.google.dagger:dagger:2.51.1")

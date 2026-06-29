@@ -34,10 +34,4 @@ fun <T1, T2, T3, R> combine(
     flow2: Flow<T2>,
     flow3: Flow<T3>,
     transform: suspend (T1, T2, T3) -> R
-): Flow<R> = combine(flow, flow2, flow3) {
-    transform(
-        it[0] as T1,
-        it[1] as T2,
-        it[2] as T3
-    )
-}
+): Flow<R> = kotlinx.coroutines.flow.combine(flow, flow2, flow3, transform)

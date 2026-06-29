@@ -27,7 +27,7 @@ import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.palette.graphics.Palette
-import com.permissionx.guolindev.PermissionX
+import acr.browser.lightning.utils.PermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -218,19 +218,14 @@ class TabWebChromeClient @AssistedInject constructor(
 
     override fun requestPermissions(permissions: Set<String>, onGrant: (Boolean) -> Unit) {
         val missingPermissions = permissions
-            .filter { !PermissionX.isGranted(activity, it) }
+            .filter { !PermissionUtils.isGranted(activity, it) }
 
         if (missingPermissions.isEmpty()) {
             onGrant(true)
         } else {
-            PermissionX.init(activity).permissions(missingPermissions)
-                .request { allGranted, _, _ ->
-                    if (allGranted) {
-                        onGrant(true)
-                    } else {
-                        onGrant(false)
-                    }
-                }
+            PermissionUtils.request(activity, missingPermissions) { allGranted ->
+                onGrant(allGranted)
+            }
         }
     }
 
@@ -267,8 +262,7 @@ class TabWebChromeClient @AssistedInject constructor(
         origin: String,
         callback: GeolocationPermissions.Callback
     ) {
-        PermissionX.init(activity).permissions(geoLocationPermissions.toList())
-            .request { allGranted, _, _ ->
+        PermissionUtils.request(activity, geoLocationPermissions.toList()) { allGranted ->
                 if (allGranted) {
                     val remember = true
                     AlertDialog.Builder(activity).apply {

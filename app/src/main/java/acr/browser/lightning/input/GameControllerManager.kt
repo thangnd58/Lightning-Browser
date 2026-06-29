@@ -97,12 +97,12 @@ class GameControllerManager(private val context: Context) {
      * Process motion events from analog sticks and triggers.
      */
     fun onMotionEvent(event: MotionEvent): Boolean {
-        if (event.source and InputDevice.TOOL_TYPE_UNKNOWN == 0) {
+        if (event.source and InputDevice.SOURCE_JOYSTICK == 0) {
             return false
         }
 
         val inputDevice = InputDevice.getDevice(event.deviceId)
-        if (inputDevice == null || inputDevice.sources and InputDevice.TOOL_TYPE_UNKNOWN == 0) {
+        if (inputDevice == null || inputDevice.sources and InputDevice.SOURCE_JOYSTICK == 0) {
             return false
         }
 
@@ -166,7 +166,8 @@ class GameControllerManager(private val context: Context) {
         return InputDevice.getDeviceIds().any { deviceId ->
             val device = InputDevice.getDevice(deviceId)
             val sources = device?.sources ?: 0
-            (sources and InputDevice.TOOL_TYPE_UNKNOWN) != 0
+            (sources and InputDevice.SOURCE_JOYSTICK) != 0 ||
+                (sources and InputDevice.SOURCE_GAMEPAD) != 0
         }
     }
 }

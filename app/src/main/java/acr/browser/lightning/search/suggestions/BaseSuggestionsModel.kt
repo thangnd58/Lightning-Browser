@@ -61,7 +61,7 @@ abstract class BaseSuggestionsModel internal constructor(
         }
 
         okHttpClient.downloadSuggestionsForQuery(query, language)
-            ?.body
+            ?.body()
             ?.safeUse(::parseResults)
             ?.take(MAX_RESULTS) ?: emptyList()
     }
