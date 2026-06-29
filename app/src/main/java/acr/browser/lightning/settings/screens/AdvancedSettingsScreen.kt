@@ -11,12 +11,8 @@ import acr.browser.lightning.resources.ResourceProvider
 import acr.browser.lightning.settings.SettingsBottomSheetChooserState
 import acr.browser.lightning.settings.framework.ClickableOnClick
 import acr.browser.lightning.settings.framework.ClickableState
-import acr.browser.lightning.settings.framework.SettingsFrameworkPresenter
-import acr.browser.lightning.settings.framework.SettingsFrameworkScreen
 import acr.browser.lightning.settings.framework.SettingsFrameworkState
 import acr.browser.lightning.settings.framework.ToggleState
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import javax.inject.Inject
 
 class AdvancedSettingsScreen @Inject constructor(
@@ -144,24 +140,6 @@ class AdvancedSettingsScreen @Inject constructor(
                 )
             )
         )
-    )
-}
-
-@Composable
-fun AdvancedSettingsScreen(
-    advancedSettingsScreen: AdvancedSettingsScreen,
-    onUp: () -> Unit
-) {
-    SettingsFrameworkScreen(
-        viewModel(
-            key = advancedSettingsScreen.key,
-            factory = SettingsFrameworkPresenter.Factory(
-                settingsFrameworkState = {
-                    advancedSettingsScreen.createSettingsFrameworkState()
-                }
-            )
-        ),
-        onUp
     )
 }
 

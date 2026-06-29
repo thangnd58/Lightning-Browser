@@ -4,12 +4,8 @@ import acr.browser.lightning.R
 import acr.browser.lightning.preference.DeveloperPreferenceStore
 import acr.browser.lightning.resources.ResourceProvider
 import acr.browser.lightning.settings.SettingsSnackBarState
-import acr.browser.lightning.settings.framework.SettingsFrameworkPresenter
-import acr.browser.lightning.settings.framework.SettingsFrameworkScreen
 import acr.browser.lightning.settings.framework.SettingsFrameworkState
 import acr.browser.lightning.settings.framework.ToggleState
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import javax.inject.Inject
 
 class DebugSettingsScreen @Inject constructor(
@@ -32,23 +28,5 @@ class DebugSettingsScreen @Inject constructor(
                 }
             )
         )
-    )
-}
-
-@Composable
-fun DebugSettingsScreen(
-    debugSettingsScreen: DebugSettingsScreen,
-    onUp: () -> Unit
-) {
-    SettingsFrameworkScreen(
-        viewModel(
-            key = debugSettingsScreen.key,
-            factory = SettingsFrameworkPresenter.Factory(
-                settingsFrameworkState = {
-                    debugSettingsScreen.createSettingsFrameworkState()
-                }
-            )
-        ),
-        onUp
     )
 }

@@ -16,15 +16,11 @@ import acr.browser.lightning.settings.SettingsBottomSheetChooserState
 import acr.browser.lightning.settings.SettingsBottomSheetInputState
 import acr.browser.lightning.settings.framework.ClickableOnClick
 import acr.browser.lightning.settings.framework.ClickableState
-import acr.browser.lightning.settings.framework.SettingsFrameworkPresenter
-import acr.browser.lightning.settings.framework.SettingsFrameworkScreen
 import acr.browser.lightning.settings.framework.SettingsFrameworkState
 import acr.browser.lightning.settings.framework.ToggleState
 import acr.browser.lightning.utils.FileUtils
 import android.os.Environment
 import android.webkit.URLUtil
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import javax.inject.Inject
 
 class GeneralSettingsScreen @Inject constructor(
@@ -283,25 +279,6 @@ class GeneralSettingsScreen @Inject constructor(
                 )
             )
         )
-    )
-}
-
-@Composable
-fun GeneralSettingsScreen(
-    generalSettingsScreen: GeneralSettingsScreen,
-    onUp: () -> Unit
-) {
-    SettingsFrameworkScreen(
-        viewModel(
-            key = generalSettingsScreen.key,
-            factory = SettingsFrameworkPresenter.Factory(
-                settingsFrameworkState = {
-                    generalSettingsScreen.createSettingsFrameworkState()
-                }
-
-            )
-        ),
-        onUp
     )
 }
 

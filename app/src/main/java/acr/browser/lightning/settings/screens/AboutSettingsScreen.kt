@@ -5,11 +5,7 @@ import acr.browser.lightning.R
 import acr.browser.lightning.resources.ResourceProvider
 import acr.browser.lightning.settings.framework.ClickableOnClick
 import acr.browser.lightning.settings.framework.ClickableState
-import acr.browser.lightning.settings.framework.SettingsFrameworkPresenter
-import acr.browser.lightning.settings.framework.SettingsFrameworkScreen
 import acr.browser.lightning.settings.framework.SettingsFrameworkState
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import javax.inject.Inject
 
 class AboutSettingsScreen @Inject constructor(
@@ -51,23 +47,5 @@ class AboutSettingsScreen @Inject constructor(
                 onClick = ClickableOnClick.WebLink("http://jsoup.org/license")
             ),
         )
-    )
-}
-
-@Composable
-fun AboutSettingsScreen(
-    aboutSettingsScreen: AboutSettingsScreen,
-    onUp: () -> Unit
-) {
-    SettingsFrameworkScreen(
-        viewModel(
-            key = aboutSettingsScreen.key,
-            factory = SettingsFrameworkPresenter.Factory(
-                settingsFrameworkState = {
-                    aboutSettingsScreen.createSettingsFrameworkState()
-                }
-            )
-        ),
-        onUp
     )
 }
