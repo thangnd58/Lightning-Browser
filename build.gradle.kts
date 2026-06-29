@@ -6,7 +6,7 @@ buildscript {
     }
 
     extra.apply {
-        set("minSdkVersion", 19)  // Android 4.4.2 support
+        set("minSdkVersion", 21)  // Android 5.0 - Lollipop minimum for modern library compatibility
         set("targetSdkVersion", 30)
         set("buildToolsVersion", 30)
     }
