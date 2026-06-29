@@ -3,8 +3,6 @@ plugins {
     id("com.github.ben-manes.versions")
     id("com.google.devtools.ksp") version "2.3.9"
     id("com.anthonycr.plugins.mezzanine") version "2.4.0"
-    id("com.autonomousapps.dependency-analysis") version "3.16.0"
-    id("com.squareup.sort-dependencies") version "0.19.0"
 }
 
 android {
@@ -33,7 +31,6 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
-        compose = false  // Disabled - not compatible with API 19
     }
 
     buildTypes {
@@ -42,8 +39,6 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             setProguardFiles(listOf("proguard-project.txt"))
-            enableUnitTestCoverage = false
-            enableAndroidTestCoverage = false
         }
 
         named("release") {
@@ -51,8 +46,6 @@ android {
             isMinifyEnabled = !isCi
             isShrinkResources = !isCi
             setProguardFiles(listOf("proguard-project.txt"))
-            enableUnitTestCoverage = false
-            enableAndroidTestCoverage = false
 
             ndk {
                 abiFilters.add("armeabi-v7a")
@@ -89,75 +82,64 @@ android {
     }
     
     lint {
-        abortOnError = false  // Relaxed for older API compatibility
+        abortOnError = false
     }
     
     namespace = "acr.browser.lightning"
 }
 
 dependencies {
-    val robolectric = "4.13.0"
-    val mezzanineVersion = "2.4.0"
-    val daggerVersion = "2.45"
+    val okhttp = "3.12.13"
     val kotlin = "1.9.22"
     val coroutines = "1.7.3"
-    val lifecycle = "2.7.0"
-    val okhttp = "3.12.13"  // Last version supporting API 19
 
-    // Core AndroidX libraries (API 19 compatible)
+    // Core AndroidX - API 19 compatible
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.annotation:annotation:1.8.0")
     implementation("androidx.core:core:1.12.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation("androidx.fragment:fragment:1.6.2")
-    implementation("androidx.lifecycle:lifecycle-common:$lifecycle")
+    implementation("androidx.lifecycle:lifecycle-common:2.7.0")
     implementation("androidx.palette:palette:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.webkit:webkit:1.10.0")
+    implementation("androidx.annotation:annotation:1.8.0")
     
-    // Material Design for API 19
+    // Material Design
     implementation("com.google.android.material:material:1.11.0")
     
-    // Networking (OkHttp 3.x is the last to support API 19)
+    // Networking
     implementation("com.squareup.okhttp3:okhttp:$okhttp")
     implementation("com.squareup.okio:okio:1.15.0")
     
     // Dependency Injection
-    implementation("com.google.dagger:dagger:$daggerVersion")
+    implementation("com.google.dagger:dagger:2.45")
+    ksp("com.google.dagger:dagger-compiler:2.45")
     
-    // Mezzanine for HTML/JS embedding
-    implementation("com.anthonycr.mezzanine:core:$mezzanineVersion")
+    // Mezzanine
+    implementation("com.anthonycr.mezzanine:core:2.4.0")
+    ksp("com.anthonycr.mezzanine:processor:2.4.0")
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
     
-    // Other utilities
+    // Utilities
     implementation("org.jsoup:jsoup:1.15.4")
     implementation("javax.inject:javax.inject:1")
-    
-    // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
     
+    // Debug
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.13")
     compileOnly("javax.annotation:jsr250-api:1.0")
 
     // Testing
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.assertj:assertj-core:3.24.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines")
     testImplementation("org.mockito:mockito-core:5.7.0")
-    testImplementation("org.robolectric:annotations:4.10.3")
-    testImplementation("org.robolectric:robolectric:4.10.3")
-
-    // Code generation
-    ksp("com.anthonycr.mezzanine:processor:$mezzanineVersion")
-    ksp("com.google.dagger:dagger-compiler:$daggerVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines")
 }
 
 mezzanine {
@@ -172,5 +154,5 @@ mezzanine {
 }
 
 kotlin {
-    jvmToolchain(11)  // Reduced from 21 for better compatibility
+    jvmToolchain(11)
 }
