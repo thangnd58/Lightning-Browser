@@ -142,17 +142,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines")
 }
 
-mezzanine {
-    files = files(
-        "src/main/html/list.html",
-        "src/main/html/bookmarks.html",
-        "src/main/html/homepage.html",
-        "src/main/js/InvertPage.js",
-        "src/main/js/TextReflow.js",
-        "src/main/js/ThemeColor.js"
-    )
-}
-
 kotlin {
     jvmToolchain(11)
 }

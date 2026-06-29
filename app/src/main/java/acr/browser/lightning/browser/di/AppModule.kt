@@ -39,12 +39,12 @@ import android.content.Context
 import android.content.pm.ShortcutManager
 import android.content.res.AssetManager
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
-import com.anthonycr.mezzanine.mezzanine
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -176,22 +176,40 @@ class AppModule {
     }
 
     @Provides
-    fun providesListPageReader(): ListPageReader = mezzanine()
+    fun providesListPageReader(assetManager: AssetManager): ListPageReader =
+        object : ListPageReader {
+            override fun provideHtml(): String = assetManager.readAssetAsText("html/list.html")
+        }
 
     @Provides
-    fun providesHomePageReader(): HomePageReader = mezzanine()
+    fun providesHomePageReader(assetManager: AssetManager): HomePageReader =
+        object : HomePageReader {
+            override fun provideHtml(): String = assetManager.readAssetAsText("html/homepage.html")
+        }
 
     @Provides
-    fun providesBookmarkPageReader(): BookmarkPageReader = mezzanine()
+    fun providesBookmarkPageReader(assetManager: AssetManager): BookmarkPageReader =
+        object : BookmarkPageReader {
+            override fun provideHtml(): String = assetManager.readAssetAsText("html/bookmarks.html")
+        }
 
     @Provides
-    fun providesTextReflow(): TextReflow = mezzanine()
+    fun providesTextReflow(assetManager: AssetManager): TextReflow =
+        object : TextReflow {
+            override fun provideJs(): String = assetManager.readAssetAsText("js/TextReflow.js")
+        }
 
     @Provides
-    fun providesThemeColor(): ThemeColor = mezzanine()
+    fun providesThemeColor(assetManager: AssetManager): ThemeColor =
+        object : ThemeColor {
+            override fun provideJs(): String = assetManager.readAssetAsText("js/ThemeColor.js")
+        }
 
     @Provides
-    fun providesInvertPage(): InvertPage = mezzanine()
+    fun providesInvertPage(assetManager: AssetManager): InvertPage =
+        object : InvertPage {
+            override fun provideJs(): String = assetManager.readAssetAsText("js/InvertPage.js")
+        }
 
     @DefaultTabTitle
     @Provides
@@ -295,3 +313,10 @@ annotation class DataDir
 @Qualifier
 @Retention(AnnotationRetention.SOURCE)
 annotation class CacheDir
+
+/**
+ * Reads an asset file and returns its content as a [String].
+ * Replaces the compile-time generated readers that were previously produced by Mezzanine.
+ */
+private fun AssetManager.readAssetAsText(fileName: String): String =
+    open(fileName).bufferedReader().use { it.readText() }
