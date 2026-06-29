@@ -12,9 +12,9 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 19  // Android 4.4.2 (KitKat)
         targetSdk = 36
-        versionName = "5.1.0"
+        versionName = "5.2.0"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -48,7 +48,7 @@ android {
         }
 
         named("release") {
-            multiDexEnabled = false
+            multiDexEnabled = true  // Required for API 19 compatibility with modern libraries
             isMinifyEnabled = !isCi
             isShrinkResources = !isCi
             setProguardFiles(listOf("proguard-project.txt"))
@@ -56,10 +56,9 @@ android {
             enableAndroidTestCoverage = false
 
             ndk {
+                abiFilters.add("armeabi-v7a")  // For older devices
                 abiFilters.add("arm64-v8a")
-                abiFilters.add("armeabi-v7a")
-                abiFilters.add("armeabi")
-                abiFilters.add("mips")
+                abiFilters.add("x86")
             }
         }
     }
