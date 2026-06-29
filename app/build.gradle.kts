@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("com.google.devtools.ksp") version "1.9.22-1.0.16"
-    id("com.anthonycr.plugins.mezzanine") version "2.4.0"
+    //id("com.anthonycr.plugins.mezzanine") version "2.4.0"
 }
 
 android {
@@ -118,8 +118,8 @@ dependencies {
     ksp("com.google.dagger:dagger-compiler:2.45")
     
     // Mezzanine
-    implementation("com.anthonycr.mezzanine:core:2.4.0")
-    ksp("com.anthonycr.mezzanine:processor:2.4.0")
+    //implementation("com.anthonycr.mezzanine:core:2.4.0")
+    //ksp("com.anthonycr.mezzanine:processor:2.4.0")
     
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin")
